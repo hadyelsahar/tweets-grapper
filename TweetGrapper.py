@@ -9,6 +9,7 @@ import sys
 import argparse
 import regex
 import subprocess
+from Vectors.CosineSim import *
 
 # command line arguments 
 parser = argparse.ArgumentParser(description='tool to Grap tweets from twitter API - show on console or write to  output file- giving some input words from text file -- [[optional]] clean tweets')
@@ -87,12 +88,18 @@ for keyword in keywords:
 
 # make new file of uniq tweets only 
 if args.uniq is True:
-
+  print "getting unique tweets out of the extracted ones"
+  #define uniq function based on consine similarity > 0.7
   def uniq(iterator):
-    previous = float("NaN")  # Not equal to anything
-    for value in iterator:
-      if previous != value:
-        yield value
+    previous = ""  # Not equal to anything
+    cosim  = CosineSim()
+    for value in iterator:          
+      
+      cos = cosim.get_cosine(previous,value) 
+      print cosim.text_to_vector(value)
+      print cos 
+      if  cos < 0.7 :
+        yield value      
         previous = value
 
   with open(args.output) as f:
