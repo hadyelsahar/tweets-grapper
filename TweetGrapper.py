@@ -8,6 +8,7 @@ import tweepy
 import sys
 import argparse
 import regex
+import subprocess
 
 # command line arguments 
 parser = argparse.ArgumentParser(description='tool to Grap tweets from twitter API - show on console or write to  output file- giving some input words from text file -- [[optional]] clean tweets')
@@ -17,8 +18,12 @@ parser.add_argument('-c','--clean',help='clean tweets by removal or  RT  , Twitt
 parser.add_argument('-kw','--showkw',help='show keyword that was used to get the tweet before the tweet itself separated by a tab', required= False , action="store_true")
 parser.add_argument('-l','--lang',help='specify language of the tweets', required= False)
 parser.add_argument('-s','--separator',help='separator used to separate between tweets , otherwise newline is used ', required= False)
+parser.add_argument('-u','--uniq',help='extract uniq list of tweets of input file to outputfile based on cosine Similarity', required= False, action="store_true")
 
 args = parser.parse_args()
+
+if args.uniq is True and args.output is None:
+  parser.error('must specify output file when choosing --uniq [-u]  option')
 
 # setting twitter API 
 consumer_token = "HHb0Q4EwqUFhiOT9cuZw"
@@ -54,7 +59,7 @@ for keyword in keywords:
     #replace underscores with spaces
     tweet = tweet.replace("_"," ")
     #remove elongations
-    tweet = regex.sub(r'(.)\1{2,}',r'\1', tweet,flags=regex.UNICODE)
+    #tweet = regex.sub(r'(.)\1{2,}',r'\1\1\1', tweet,flags=regex.UNICODE)
     #remove non characters     
     tweet = regex.sub(r'[\W]+',' ', tweet,flags=regex.UNICODE)
 
@@ -80,3 +85,17 @@ for keyword in keywords:
     print tweetsText
 
 
+# make new file of uniq tweets only 
+if args.uniq is True:
+
+  def uniq(iterator):
+    previous = float("NaN")  # Not equal to anything
+    for value in iterator:
+      if previous != value:
+        yield value
+        previous = value
+
+  with open(args.output) as f:
+    with open("uniq_"+args.output, 'w+') as file:
+      for line in uniq(sorted(f)):
+        file.write(line)
