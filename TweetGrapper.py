@@ -33,6 +33,7 @@ auth = tweepy.OAuthHandler( consumer_token,consumer_secret )
 api = tweepy.API(auth)
 
 
+
 # reading keywords from input file 
 with open(args.input) as f:
     kws = f.read().split("\n")
@@ -50,23 +51,6 @@ for keyword in keywords:
     def txt(tweet) : return regex.sub(r'[\t\n\s]+',' ',tweet.text)
     tweets = map(txt,tweets)
  
-    # cleaning tweets if required 
-    def clean(tweet) : 
-  	  #discarding twitter usernames
-      tweet = regex.sub(r'@[A-Za-z0-9_]+', '', tweet,flags=regex.UNICODE)
-      #discarding twitter RT or RTTTT or any of it's elongations
-      tweet = regex.sub(r'R+T+\s*:*\s', ' ', tweet,flags=regex.UNICODE)
-      #Removing links 
-      tweet = regex.sub(r'http[s]?://[^\s<>"]+|www\.[^\s<>"]+', ' ', tweet)
-      #replace underscores with spaces
-      tweet = tweet.replace("_"," ")
-      #remove elongations
-      #tweet = regex.sub(r'(.)\1{2,}',r'\1\1\1', tweet,flags=regex.UNICODE)
-      #remove non characters     
-      tweet = regex.sub(r'[\W]+',' ', tweet,flags=regex.UNICODE)
-
-      return tweet.strip()  
-
     if args.clean is True :  
       tweets = map(clean,tweets)
 
@@ -90,7 +74,6 @@ for keyword in keywords:
     with open("log.txt", 'a+') as file:    
       file.write(keyword)
 
-
 # make new file of uniq tweets only 
 if args.uniq is True:
   print "getting unique tweets out of the extracted ones"
@@ -100,9 +83,7 @@ if args.uniq is True:
     cosim  = CosineSim()
     for value in iterator:          
       
-      cos = cosim.get_cosine(previous,value) 
-      print cosim.text_to_vector(value)
-      print cos 
+      cos = cosim.get_cosine(previous,value)     
       if  cos < 0.7 :
         yield value      
         previous = value
@@ -111,3 +92,46 @@ if args.uniq is True:
     with open("uniq_"+args.output, 'w+') as file:
       for line in uniq(sorted(f)):
         file.write(line)
+
+
+
+
+##--- Helper functions
+
+# cleaning tweets
+def clean(tweet) : 
+  #discarding twitter usernames
+  tweet = regex.sub(r'@[A-Za-z0-9_]+', '', tweet,flags=regex.UNICODE)
+  #discarding twitter RT or RTTTT or any of it's elongations
+  tweet = regex.sub(r'R+T+\s*:*\s', ' ', tweet,flags=regex.UNICODE)
+  #Removing links 
+  tweet = regex.sub(r'http[s]?://[^\s<>"]+|www\.[^\s<>"]+', ' ', tweet)
+  #replace underscores with spaces
+  tweet = tweet.replace("_"," ")
+  #remove elongations
+  #tweet = regex.sub(r'(.)\1{2,}',r'\1\1\1', tweet,flags=regex.UNICODE)
+  #remove non characters     
+  tweet = regex.sub(r'[\W]+',' ', tweet,flags=regex.UNICODE)
+
+  return tweet.strip()  
+
+
+##--- Helper Classes 
+class CustomStreamListener(tweepy.StreamListener):
+
+    def on_status(self, status):
+        
+        try:
+            print (status.text)                              
+
+        except Exception, e:
+            print >> sys.stderr, 'Encountered Exception:', e
+            pass
+
+    def on_error(self, status_code):
+        print >> sys.stderr, 'error capturing tweets :', status_code
+        return True 
+
+    def on_timeout(self):
+        print >> sys.stderr, 'Timeout...'
+        return True 
