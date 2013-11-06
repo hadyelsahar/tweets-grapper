@@ -69,11 +69,16 @@ def writeTweet(keyword, tweet):
 
 ##--- Helper Classes 
 class CustomStreamListener(tweepy.StreamListener):
+    counter = 0 
 
     def on_status(self, status):
         
         try:
-          writeTweet(args.search, status.text)                                
+          writeTweet(args.search, status.text)   
+          CustomStreamListener.counter = CustomStreamListener.counter +1 
+          if CustomStreamListener.counter % 100 is 0 :
+            print(str(CustomStreamListener.counter) + " tweets grapped")
+
 
         except Exception, e:
           print >> sys.stderr, 'Encountered Exception:', e
