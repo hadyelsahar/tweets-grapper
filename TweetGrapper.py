@@ -51,6 +51,7 @@ def clean(tweet) :
 def addKeyWord(keyword, tweet) : return  keyword+'\t'+tweet 
 
 def writeTweet(keyword, tweet):
+  keyword = unicode(keyword, encoding='utf-8')
   if args.clean is True :  
     tweet = clean(tweet)
       
