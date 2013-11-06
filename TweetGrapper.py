@@ -39,51 +39,56 @@ with open(args.input) as f:
     keywords = [unicode(kw.strip(), encoding='utf-8') for kw in kws if len(kw) > 0]
 
 for keyword in keywords: 
-  # fetcing tweet with specificed language or not 
-  if args.lang is not None :
-    tweets = api.search(keyword,count=1000,lang=args.lang)
-  else :
-    tweets = api.search(keyword,count=1000)
+  try:
+    # fetcing tweet with specificed language or not 
+    if args.lang is not None :
+      tweets = api.search(keyword,count=1000,lang=args.lang)
+    else :
+      tweets = api.search(keyword,count=1000)
   
-  # getting tweet text   
-  def txt(tweet) : return regex.sub(r'[\t\n\s]+',' ',tweet.text)
-  tweets = map(txt,tweets)
+    # getting tweet text   
+    def txt(tweet) : return regex.sub(r'[\t\n\s]+',' ',tweet.text)
+    tweets = map(txt,tweets)
  
-  # cleaning tweets if required 
-  def clean(tweet) : 
-  	#discarding twitter usernames
-    tweet = regex.sub(r'@[A-Za-z0-9_]+', '', tweet,flags=regex.UNICODE)
-    #discarding twitter RT or RTTTT or any of it's elongations
-    tweet = regex.sub(r'R+T+\s*:*\s', ' ', tweet,flags=regex.UNICODE)
-    #Removing links 
-    tweet = regex.sub(r'http[s]?://[^\s<>"]+|www\.[^\s<>"]+', ' ', tweet)
-    #replace underscores with spaces
-    tweet = tweet.replace("_"," ")
-    #remove elongations
-    #tweet = regex.sub(r'(.)\1{2,}',r'\1\1\1', tweet,flags=regex.UNICODE)
-    #remove non characters     
-    tweet = regex.sub(r'[\W]+',' ', tweet,flags=regex.UNICODE)
+    # cleaning tweets if required 
+    def clean(tweet) : 
+  	  #discarding twitter usernames
+      tweet = regex.sub(r'@[A-Za-z0-9_]+', '', tweet,flags=regex.UNICODE)
+      #discarding twitter RT or RTTTT or any of it's elongations
+      tweet = regex.sub(r'R+T+\s*:*\s', ' ', tweet,flags=regex.UNICODE)
+      #Removing links 
+      tweet = regex.sub(r'http[s]?://[^\s<>"]+|www\.[^\s<>"]+', ' ', tweet)
+      #replace underscores with spaces
+      tweet = tweet.replace("_"," ")
+      #remove elongations
+      #tweet = regex.sub(r'(.)\1{2,}',r'\1\1\1', tweet,flags=regex.UNICODE)
+      #remove non characters     
+      tweet = regex.sub(r'[\W]+',' ', tweet,flags=regex.UNICODE)
 
-    return tweet.strip()  
+      return tweet.strip()  
 
-  if args.clean is True :  
-    tweets = map(clean,tweets)
+    if args.clean is True :  
+      tweets = map(clean,tweets)
 
-  # add keyword to the begining of each tweet if option is selected 
-  def addKeyWord(tweet) : return  keyword+'\t'+tweet 
-  if args.showkw is True : tweets = map(addKeyWord,tweets)
+    # add keyword to the begining of each tweet if option is selected 
+    def addKeyWord(tweet) : return  keyword+'\t'+tweet 
+    if args.showkw is True : tweets = map(addKeyWord,tweets)
  
-  # parsing separating them with separator  
-  separator = ("\n" if args.separator is None else args.separator)
+    # parsing separating them with separator  
+    separator = ("\n" if args.separator is None else args.separator)
 
-  tweetsText = separator.join(tweets)   	       	    	   	                 	      
+    tweetsText = separator.join(tweets)   	       	    	   	                 	      
 
-  if args.output is not None :
-    with open(args.output, "a") as myfile:
-      myfile.write(tweetsText.encode('utf-8'))	
-    print "-- "+str(len(tweets))+" tweets for keyword : \""+ keyword+"\"" 
-  else :
-    print tweetsText
+    if args.output is not None :
+      with open(args.output, "a") as myfile:
+        myfile.write(tweetsText.encode('utf-8'))	      
+      print "-- "+str(len(tweets))+" tweets for keyword : \""+ keyword+"\"" 
+    else :
+      print tweetsText
+
+  except:
+    with open("log.txt", 'a+') as file:    
+      file.write(keyword)
 
 
 # make new file of uniq tweets only 
