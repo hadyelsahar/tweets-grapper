@@ -51,7 +51,6 @@ def clean(tweet) :
 def addKeyWord(keyword, tweet) : return  keyword+'\t'+tweet 
 
 def writeTweet(keyword, tweet):
-  keyword = unicode(keyword, encoding='utf-8')
   if args.clean is True :  
     tweet = clean(tweet)
       
@@ -107,6 +106,7 @@ auth.set_access_token(ACCESS_TOKEN, ACCESS_TOKEN_SECRET)
 api = tweepy.API(auth)
 
 if args.search is None: 
+
   # reading keywords from input file 
   with open(args.input) as f:
       kws = f.read().split("\n")
@@ -123,13 +123,14 @@ if args.search is None:
       # getting tweet text   
       def txt(tweet) : return regex.sub(r'[\t\n\s]+',' ',tweet.text)
       tweets = map(txt,tweets)
-   
-      for tweet in tweet:
+      
+      print len(tweets)
+      for tweet in tweets:
         writeTweet(keyword, tweet)
-
-    except:
+    
+    except Exception, e:
       with open("log.txt", 'a+') as file:    
-        file.write(keyword.encode('utf-8'))
+        file.write(str(e) + "error when writing tweet of " + keyword.encode('utf-8'))
 
   # make new file of uniq tweets only 
   if args.uniq is True:
@@ -152,4 +153,6 @@ if args.search is None:
 else :
   streaming_api = tweepy.streaming.Stream(auth, CustomStreamListener(), timeout=60)
   print("searching twitter feed for \"" + args.search + "\"")
-  streaming_api.filter(follow=None, track=args.search)
+  
+  streaming_api.filter(follow=None, track= unicode(args.search.strip(), encoding='utf-8'))
+
