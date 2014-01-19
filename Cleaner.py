@@ -79,4 +79,4 @@ if args.uniq is True:
     with open(args.output) as f:
       with open("uniq_"+args.output, 'w+') as file:
         for line in uniq(sorted(f)):
-          file.write(line)
+          file.write(line+"\n")
