@@ -77,6 +77,7 @@ if args.uniq is True:
           previous = value
 
     with open(args.output) as f:
+      tweets = f.read().split("\n")
       with open("uniq_"+args.output, 'w+') as file:
-        for line in uniq(sorted(f)):
+        for line in uniq(sorted(tweets)):
           file.write(line+"\n")
