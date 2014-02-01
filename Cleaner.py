@@ -37,8 +37,12 @@ def clean(tweet) :
   #replace underscores with spaces
   tweet = tweet.replace("_"," ")
 
+  #remove Mentions
+  tweet = regex.sub('@\w+', '', tweet).strip()
+
   #remove elongations
-  #tweet = regex.sub(r'(.)\1{2,}',r'\1\1\1', tweet,flags=regex.UNICODE)
+  #tweet = regex.sub(r'(.)\1\1+',r'\1\1\1', tweet,flags=regex.UNICODE)
+
   #Convert hashtags into words
   tweet = regex.sub(r'[#_]+',' ', tweet,flags=regex.UNICODE)
 
