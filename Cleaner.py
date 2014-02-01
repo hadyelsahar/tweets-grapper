@@ -33,10 +33,7 @@ def clean(tweet) :
 
   #Removing links 
   tweet = regex.sub(r'http[s]?://[^\s<>"]+|www\.[^\s<>"]+', ' ', tweet)
-
-  #replace underscores with spaces
-  tweet = tweet.replace("_"," ")
-
+  
   #remove Mentions
   tweet = regex.sub('@\w+', '', tweet).strip()
 
