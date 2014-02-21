@@ -11,7 +11,7 @@ import regex
 import subprocess
 from Vectors.CosineSim import *
 
-# command line arguments 
+# command line arguments:
 parser = argparse.ArgumentParser(description='tool to Grap tweets from twitter API - show on console or write to  output file- giving some input words from text file - or search keywords -- [[optional]] clean tweets')
 parser.add_argument('-i','--input', help='Input file name',required=False)
 parser.add_argument('-o','--output',help='Output file name - print in console if not specified', required= False)
@@ -21,6 +21,7 @@ parser.add_argument('-l','--lang',help='specify language of the tweets', require
 parser.add_argument('-sep','--separator',help='separator used to separate between tweets , otherwise newline is used ', required= False)
 parser.add_argument('-u','--uniq',help='extract uniq list of tweets of input file to outputfile based on cosine Similarity', required= False, action="store_true")
 parser.add_argument('-s','--search', help='activate search mode and capture keyword for search',required=False)
+parser.add_argument('-loc','--location', help='activate search mode and capture keyword for search',required=True)
 
 args = parser.parse_args()
 
@@ -51,7 +52,7 @@ def clean(tweet) :
   tweet = regex.sub(r'[#_]+',' ', tweet,flags=regex.UNICODE)
 
   return tweet.strip()  
-  
+
 # add keyword to the begining of each tweet if option is selected 
 def addKeyWord(keyword, tweet) : return  keyword+'\t'+tweet 
 
@@ -121,9 +122,9 @@ if args.search is None:
     try:
       # fetcing tweet with specificed language or not 
       if args.lang is not None :
-        tweets = api.search(keyword,count=1000,lang=args.lang)
+        tweets = api.search(keyword,count=1000,lang=args.lang,locale=args.location)
       else :
-        tweets = api.search(keyword,count=1000)
+        tweets = api.search(keyword,count=1000,locale=args.location)
     
       # getting tweet text   
       def txt(tweet) : return regex.sub(r'[\t\n\s]+',' ',tweet.text)
