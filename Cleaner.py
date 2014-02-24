@@ -9,6 +9,7 @@ import sys
 import argparse
 import regex
 import subprocess
+import string
 from Vectors.CosineSim import *
 
 # command line arguments 
@@ -25,8 +26,9 @@ if args.uniq is True and args.output is None:
 
 ######--- Helper functions
 def clean(tweet) : 
+
   #discarding twitter usernames
-  #tweet = regex.sub(r'@[A-Za-z0-9_]+', '', tweet,flags=regex.UNICODE)
+  tweet = regex.sub(r'@[A-Za-z0-9_]+', '', tweet,flags=regex.UNICODE)
 
   #discarding twitter RT or RTTTT or any of it's elongations
   tweet = regex.sub(r'R+T+\s*:*\s', ' ', tweet,flags=regex.UNICODE)
@@ -34,14 +36,21 @@ def clean(tweet) :
   #Removing links 
   tweet = regex.sub(r'http[s]?://[^\s<>"]+|www\.[^\s<>"]+', ' ', tweet)
   
+  #remove puncitutaion
+  remove_punctuation_map = dict((ord(char), None) for char in string.punctuation)
+  tweet = tweet.translate(remove_punctuation_map)
+
   #remove Mentions
   tweet = regex.sub('@\w+', '', tweet).strip()
 
   #remove elongations
-  #tweet = regex.sub(r'(.)\1\1+',r'\1\1\1', tweet,flags=regex.UNICODE)
+  tweet = regex.sub(r'(.)\1\1+',r'\1\1\1', tweet,flags=regex.UNICODE)
 
   #Convert hashtags into words
   tweet = regex.sub(r'[#_]+',' ', tweet,flags=regex.UNICODE)
+
+  #remove extra spaces
+  tweet = " ".join([i for i in tweet.split(" ") if len(i) > 0])
 
   return tweet.strip()  
 def writeTweet(tweet):
