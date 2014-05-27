@@ -126,10 +126,10 @@ class StdOutListener(StreamListener):
 
 
 # setting twitter API 
-consumer_token = "HHb0Q4EwqUFhiOT9cuZw"
-consumer_secret = "wiUpi18szMmaBeDe3Xz0W8hTm4DSSSwRKSAdE5OTv0"
-ACCESS_TOKEN = '158681231-7iclqcgq8kFkPZBiQPK0AruMSKySUlNr0FethRFf'
-ACCESS_TOKEN_SECRET = 'VisPcmHHE6ENNDspL48g15CloHNVmt0FRMPopCdphzpQb'
+consumer_token = ""
+consumer_secret = ""
+ACCESS_TOKEN = ''
+ACCESS_TOKEN_SECRET = ''
 
 
 #setting Tweepy API
